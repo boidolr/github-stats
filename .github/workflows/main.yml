@@ -13,26 +13,20 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - uses: actions/setup-python@v2
+    - uses: actions/setup-python@v2.3.2
       with:
         python-version: '3.10'
         architecture: 'x64'
-
-    - uses: actions/cache@v2
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
+        cache: pip
 
     - run: |
         python3 -m pip install -q --upgrade pip setuptools wheel
         python3 -m pip install -q -r requirements.txt
         python3 generate_images.py
         
-        git config --global user.name "github-actions"
-        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git add .
+        git config user.name "github-actions"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add generated
         # "echo" returns true so the build succeeds, even if no changed files
         git commit -m 'Update generated files' || echo
         git push --force origin HEAD:gh-pages
