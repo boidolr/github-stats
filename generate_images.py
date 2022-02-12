@@ -2,6 +2,7 @@
 
 import asyncio
 import os
+import pathlib
 import re
 
 import aiohttp
@@ -18,13 +19,30 @@ def generate_output_folder() -> None:
     """
     Create the output folder if it does not already exist
     """
-    if not os.path.isdir("generated"):
-        os.mkdir("generated")
+    pathlib.Path("generated").mkdir(exist_ok=True)
 
 
-def create_svg(template: str, replacements: dict[str, str]) -> str:
+def create_svg(template: str, replacements: dict[str, str], theme: str) -> str:
+    colors = (
+        {
+            "var_color": "#57a6ff",
+            "var_heading": "#8b949e",
+            "var_accent": "#484f58",
+        }
+        if theme == "dark"
+        else {
+            "var_color": "#24292f",
+            "var_heading": "#0969da",
+            "var_accent": "#6e7781",
+        }
+    )
+    variables = {
+        **colors,
+        **replacements,
+    }
+
     def replacer(match: re.Match) -> str:
-        return replacements.get(match.group(1), "")
+        return variables.get(match.group(1), "")
 
     return re.sub("{{ ([a-z_]+) }}", replacer, template)
 
@@ -52,10 +70,17 @@ async def generate_overview(s: Stats) -> None:
         "repos": f"{len(await s.repos):,}",
     }
 
+    light = create_svg(template, replacements, "light")
+    dark = create_svg(template, replacements, "dark")
+
+
     generate_output_folder()
-    output = create_svg(template, replacements)
     with open("generated/overview.svg", "w") as f:
-        f.write(output)
+        f.write(light)
+    with open("generated/overview-dark.svg", "w") as f:
+        f.write(dark)
+    with open("generated/overview-light.svg", "w") as f:
+        f.write(light)
 
 
 async def generate_languages(s: Stats) -> None:
@@ -70,7 +95,7 @@ async def generate_languages(s: Stats) -> None:
     lang_list = ""
     sorted_languages = sorted(
         (await s.languages).items(), reverse=True, key=lambda t: t[1].get("size")
-    )
+    )[:10]
     delay_between = 50
     for i, (lang, data) in enumerate(sorted_languages):
         color = data.get("color")
@@ -82,25 +107,30 @@ async def generate_languages(s: Stats) -> None:
             f'class="progress-item"></span>'
         )
         lang_list += f"""
-<li style="animation-delay: {i * delay_between}ms;">
-<svg xmlns="http://www.w3.org/2000/svg" class="octicon" style="fill:{color};"
-viewBox="0 0 16 16" version="1.1" width="16" height="16"><path
-fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"></path></svg>
-<span class="lang">{lang}</span>
-<span class="percent">{prop:0.2f}%</span>
-</li>
+        <li style="animation-delay: {i * delay_between}ms;">
+        <svg xmlns="http://www.w3.org/2000/svg" class="octicon" style="fill:{color};"
+        viewBox="0 0 16 16" version="1.1" width="16" height="16"><path
+        fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"></path></svg>
+        <span class="lang">{lang}</span>
+        <span class="percent">{prop:0.2f}%</span>
+        </li>
 
-"""
+        """
 
     replacements = {
         "progress": progress,
         "lang_list": lang_list,
     }
+    light = create_svg(template, replacements, "light")
+    dark = create_svg(template, replacements, "dark")
 
     generate_output_folder()
-    output = create_svg(template, replacements)
     with open("generated/languages.svg", "w") as f:
-        f.write(output)
+        f.write(light)
+    with open("generated/languages-dark.svg", "w") as f:
+        f.write(dark)
+    with open("generated/languages-light.svg", "w") as f:
+        f.write(light)
 
 
 ################################################################################

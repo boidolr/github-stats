@@ -4,11 +4,11 @@ svg {
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
   font-size: 14px;
   line-height: 21px;
-  --bg: white;
+  --bg: rgba(0, 0, 0, 0);
   --bg-stroke: rgb(225, 228, 232);
-  --heading: rgb(36, 41, 46);
-  --lang: rgb(36, 41, 46);
-  --percent: rgb(88, 96, 105);
+  --heading: {{ var_heading }};
+  --lang: {{ var_accent }};
+  --percent: {{ var_color }};
   --progress: rgb(225, 228, 232);
 }
 
