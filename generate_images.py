@@ -22,6 +22,13 @@ def generate_output_folder() -> None:
         os.mkdir("generated")
 
 
+def create_svg(template: str, replacements: dict[str, str]) -> str:
+    def replacer(match: re.Match) -> str:
+        return replacements.get(match.group(1), "")
+
+    return re.sub("{{ ([a-z_]+) }}", replacer, template)
+
+
 ################################################################################
 # Individual Image Generation Functions
 ################################################################################
@@ -33,18 +40,20 @@ async def generate_overview(s: Stats) -> None:
     :param s: Represents user's GitHub statistics
     """
     with open("templates/overview.svg", "r") as f:
-        output = f.read()
+        template = f.read()
 
-    output = re.sub("{{ name }}", await s.name, output)
-    output = re.sub("{{ stars }}", f"{await s.stargazers:,}", output)
-    output = re.sub("{{ forks }}", f"{await s.forks:,}", output)
-    output = re.sub("{{ contributions }}", f"{await s.total_contributions:,}", output)
-    changed = (await s.lines_changed)[0] + (await s.lines_changed)[1]
-    output = re.sub("{{ lines_changed }}", f"{changed:,}", output)
-    output = re.sub("{{ views }}", f"{await s.views:,}", output)
-    output = re.sub("{{ repos }}", f"{len(await s.repos):,}", output)
+    replacements = {
+        "name": await s.name,
+        "stars": f"{(await s.stargazers):,}",
+        "forks": f"{(await s.forks):,}",
+        "contributions": f"{(await s.total_contributions):,}",
+        "lines_changed": f"{sum(await s.lines_changed)}",
+        "views": f"{await s.views:,}",
+        "repos": f"{len(await s.repos):,}",
+    }
 
     generate_output_folder()
+    output = create_svg(template, replacements)
     with open("generated/overview.svg", "w") as f:
         f.write(output)
 
@@ -55,7 +64,7 @@ async def generate_languages(s: Stats) -> None:
     :param s: Represents user's GitHub statistics
     """
     with open("templates/languages.svg", "r") as f:
-        output = f.read()
+        template = f.read()
 
     progress = ""
     lang_list = ""
@@ -83,10 +92,13 @@ fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"></path></svg>
 
 """
 
-    output = re.sub(r"{{ progress }}", progress, output)
-    output = re.sub(r"{{ lang_list }}", lang_list, output)
+    replacements = {
+        "progress": progress,
+        "lang_list": lang_list,
+    }
 
     generate_output_folder()
+    output = create_svg(template, replacements)
     with open("generated/languages.svg", "w") as f:
         f.write(output)
 
