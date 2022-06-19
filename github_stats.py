@@ -13,7 +13,7 @@ import requests
 ###############################################################################
 
 
-class Queries(object):
+class Queries:
     """
     Class with functions to query the GitHub GraphQL (v4) API and the REST (v3)
     API. Also includes functions to dynamically generate GraphQL queries.
@@ -245,7 +245,7 @@ query {{
 """
 
 
-class Stats(object):
+class Stats:
     """
     Retrieve and store statistics about GitHub usage.
     """
@@ -512,11 +512,41 @@ Languages:
         total = 0
         for repo in await self.repos:
             r = await self.queries.query_rest(f"/repos/{repo}/traffic/views")
-            for view in r.get("views", []):
-                total += view.get("count", 0)
+            total += sum(view.get("count", 0) for view in r.get("views", []))
 
         self._views = total
         return total
+
+    @property
+    async def pull_requests(self) -> int:
+        """
+        :return: count of pull requests in repositories
+        """
+        pull_requests = 0
+        for repo in await self.repos:
+            r = await self.queries.query_rest(f"/repos/{repo}/pulls?state=all")
+
+            pull_requests += sum(1 for obj in r if isinstance(obj, dict))
+        return pull_requests
+
+    @property
+    async def issues(self) -> int:
+        """
+        :return: count of issues in repositories
+        """
+        issues = 0
+
+        for repo in await self.repos:
+            r = await self.queries.query_rest(f"/repos/{repo}/issues?state=all")
+
+            for obj in r:
+                if isinstance(obj, dict):
+                    try:
+                        if obj.get("html_url").split("/")[-2] == "issues":
+                            issues += 1
+                    except AttributeError:
+                        continue
+        return issues
 
 
 ###############################################################################

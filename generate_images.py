@@ -73,7 +73,6 @@ async def generate_overview(s: Stats) -> None:
     light = create_svg(template, replacements, "light")
     dark = create_svg(template, replacements, "dark")
 
-
     generate_output_folder()
     with open("generated/overview.svg", "w") as f:
         f.write(light)
