@@ -2,10 +2,10 @@
 
 <a href="https://github.com/boidolr/github-stats">
 
-![Light](https://boidolr.github.io/github-stats/generated/overview-light.svg#gh-light-mode-only)
-![Dark](https://boidolr.github.io/github-stats/generated/overview-dark.svg#gh-dark-mode-only)
-![Light](https://boidolr.github.io/github-stats/generated/languages-light.svg#gh-light-mode-only)
-![Dark](https://boidolr.github.io/github-stats/generated/languages-dark.svg#gh-dark-mode-only)
+![Light](https://raw.githubusercontent.com/boidolr/github-stats/gh-pages/generated/overview-light.svg#gh-light-mode-only)
+![Dark](https://raw.githubusercontent.com/boidolr/github-stats/gh-pages/generated/overview-dark.svg#gh-dark-mode-only)
+![Light](https://raw.githubusercontent.com/boidolr/github-stats/gh-pages/generated/languages-light.svg#gh-light-mode-only)
+![Dark](https://raw.githubusercontent.com/boidolr/github-stats/gh-pages/generated/languages-dark.svg#gh-dark-mode-only)
 
 </a>
 
