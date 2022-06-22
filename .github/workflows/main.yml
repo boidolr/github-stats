@@ -12,28 +12,40 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-
     - uses: actions/setup-python@v4
       with:
         python-version: '3.10'
         architecture: 'x64'
         cache: pip
-
     - run: |
         python3 -m pip install -q --upgrade pip setuptools wheel
         python3 -m pip install -q -r requirements.txt
         python3 generate_images.py
-        
-        git config user.name "github-actions"
-        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git add generated
-        # "echo" returns true so the build succeeds, even if no changed files
-        git commit -m 'Update generated files' || echo
-        git push --force origin HEAD:gh-pages
       env:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         EXCLUDED: ${{ secrets.EXCLUDED }}
         EXCLUDED_LANGS: ${{ secrets.EXCLUDED_LANGS }}
         EXCLUDE_FORKED_REPOS: true
+    - uses: actions/upload-artifact@v3
+      with:
+        name: svgs
+        path: generated
 
+  commit:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/download-artifact@v3
+      with:
+        name: svgs
+        path: generated
+    - run: |
+        git config user.name "github-actions"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add generated
+        git commit -m 'Update generated files' || echo
+        git push --force origin HEAD:gh-pages
