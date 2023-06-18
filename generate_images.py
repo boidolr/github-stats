@@ -90,8 +90,8 @@ async def generate_languages(s: Stats) -> None:
     with open("templates/languages.svg", "r") as f:
         template = f.read()
 
-    progress = ""
-    lang_list = ""
+    progress = []
+    lang_list = []
     sorted_languages = sorted(
         (await s.languages).items(), reverse=True, key=lambda t: t[1].get("size")
     )[:10]
@@ -100,25 +100,25 @@ async def generate_languages(s: Stats) -> None:
         color = data.get("color")
         prop = data.get("prop", 0)
         color = color if color is not None else "#000000"
-        progress += (
+        progress.append(
             f'<span style="background-color: {color};'
             f'width: {prop:0.3f}%;" '
             f'class="progress-item"></span>'
         )
-        lang_list += f"""
-        <li style="animation-delay: {i * delay_between}ms;">
-        <svg xmlns="http://www.w3.org/2000/svg" class="octicon" style="fill:{color};"
-        viewBox="0 0 16 16" version="1.1" width="16" height="16"><path
-        fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"></path></svg>
-        <span class="lang">{lang}</span>
-        <span class="percent">{prop:0.2f}%</span>
-        </li>
-
-        """
+        lang_list.append(f"""\
+            <li style="animation-delay: {i * delay_between}ms;">
+            <svg xmlns="http://www.w3.org/2000/svg" class="octicon" style="fill:{color};"
+            viewBox="0 0 16 16" version="1.1" width="16" height="16"><path
+            fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"></path></svg>
+            <span class="lang">{lang}</span>
+            <span class="percent">{prop:0.2f}%</span>
+            </li>
+            """
+        )
 
     replacements = {
-        "progress": progress,
-        "lang_list": lang_list,
+        "progress": "".join(progress),
+        "lang_list": "".join(lang_list[:4]),
     }
     light = create_svg(template, replacements, "light")
     dark = create_svg(template, replacements, "dark")
