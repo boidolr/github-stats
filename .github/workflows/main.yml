@@ -17,9 +17,10 @@ jobs:
         python-version: '3.11'
         architecture: 'x64'
         cache: pip
-    - run: |
-        pip3 install -q -r requirements.txt
-        python3 generate_images.py
+    - name: Install dependencies
+      run: pip3 install -q -r requirements.txt
+    - name: Generate statistics
+      run: python3 generate_images.py
       env:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
