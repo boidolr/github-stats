@@ -261,8 +261,8 @@ class Stats:
     ):
         self.username = username
         self._ignore_forked_repos = ignore_forked_repos
-        self._exclude_repos = set() if exclude_repos is None else exclude_repos
-        self._exclude_langs = set() if exclude_langs is None else exclude_langs
+        self._exclude_repos = exclude_repos or set()
+        self._exclude_langs = exclude_langs or set()
         self.queries = Queries(username, access_token, session)
 
         self._name = None
@@ -560,8 +560,11 @@ async def main() -> None:
     """
     access_token = os.getenv("ACCESS_TOKEN")
     user = os.getenv("GITHUB_ACTOR")
+    excluded_langs = os.getenv("EXCLUDED_LANGS")
+    exclude_langs = set(excluded_langs.split(",")) if excluded_langs else None
+
     async with aiohttp.ClientSession() as session:
-        s = Stats(user, access_token, session)
+        s = Stats(user, access_token, session, exclude_langs=exclude_langs)
         print(await s.to_str())
 
 
