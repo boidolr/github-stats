@@ -76,6 +76,8 @@ class Queries:
         for _ in range(60):
             headers = {
                 "Authorization": f"token {self.access_token}",
+                "X-GitHub-Api-Version": "2022-11-28",
+                "Accept": "application/vnd.github+json",
             }
             if params is None:
                 params = dict()
@@ -136,6 +138,7 @@ class Queries:
         isFork: false,
         after: {"null" if owned_cursor is None else '"'+ owned_cursor +'"'}
     ) {{
+      totalCount
       pageInfo {{
         hasNextPage
         endCursor
@@ -172,6 +175,7 @@ class Queries:
         ]
         after: {"null" if contrib_cursor is None else '"'+ contrib_cursor +'"'}
     ) {{
+      totalCount
       pageInfo {{
         hasNextPage
         endCursor
@@ -273,6 +277,7 @@ class Stats:
         self._repos = None
         self._lines_changed = None
         self._views = None
+        self._get_stats_completed = None
 
     async def to_str(self) -> str:
         """
@@ -296,13 +301,23 @@ Languages:
   - {formatted_languages}"""
 
     async def get_stats(self) -> None:
+        if self._get_stats_completed is not None:
+            await self._get_stats_completed.wait()
+            return
+
+        self._get_stats_completed = asyncio.Event()
+        await self._get_stats()
+        self._get_stats_completed.set()
+
+    async def _get_stats(self) -> None:
         """
         Get lots of summary statistics using one big query. Sets many attributes
         """
-        self._stargazers = 0
-        self._forks = 0
-        self._languages = dict()
-        self._repos = set()
+        stargazers = 0
+        forks = 0
+        languages = dict()
+        repos = set()
+        name = None
 
         next_owned = None
         next_contrib = None
@@ -314,9 +329,12 @@ Languages:
             )
             raw_results = raw_results if raw_results is not None else {}
 
-            self._name = raw_results.get("data", {}).get("viewer", {}).get("name", None)
-            if self._name is None:
-                self._name = (
+            repo_count = raw_results.get("data", {}).get("viewer", {}).get("repositories", {}).get("totalCount", 0) \
+                    + raw_results.get("data", {}).get("viewer", {}).get("repositoriesContributedTo", {}).get("totalCount", 0)
+
+            name = raw_results.get("data", {}).get("viewer", {}).get("name", None)
+            if name is None:
+                name = (
                     raw_results.get("data", {})
                     .get("viewer", {})
                     .get("login", "No Name")
@@ -331,23 +349,23 @@ Languages:
                 raw_results.get("data", {}).get("viewer", {}).get("repositories", {})
             )
 
-            repos = owned_repos.get("nodes", [])
+            fetched_repos = owned_repos.get("nodes", [])
             if not self._ignore_forked_repos:
-                repos += contrib_repos.get("nodes", [])
+                fetched_repos += contrib_repos.get("nodes", [])
 
-            for repo in repos:
+            for i, repo in enumerate(fetched_repos):
+                print(f"Fetching stats for repo ({i+1}/{repo_count})")
                 if repo is None:
                     continue
                 name = repo.get("nameWithOwner")
-                if name in self._repos or name in self._exclude_repos:
+                if name in repos or name in self._exclude_repos:
                     continue
-                self._repos.add(name)
-                self._stargazers += repo.get("stargazers").get("totalCount", 0)
-                self._forks += repo.get("forkCount", 0)
+                repos.add(name)
+                stargazers += repo.get("stargazers").get("totalCount", 0)
+                forks += repo.get("forkCount", 0)
 
                 for lang in repo.get("languages", {}).get("edges", []):
                     name = lang.get("node", {}).get("name", "Other")
-                    languages = await self.languages
                     if name in self._exclude_langs:
                         continue
                     if name in languages:
@@ -372,11 +390,15 @@ Languages:
             else:
                 break
 
-        # TODO: Improve languages to scale by number of contributions to
-        #       specific filetypes
-        langs_total = sum([v.get("size", 0) for v in self._languages.values()])
-        for k, v in self._languages.items():
+        langs_total = sum([v.get("size", 0) for v in languages.values()])
+        for k, v in languages.items():
             v["prop"] = 100 * (v.get("size", 0) / langs_total)
+
+        self._stargazers = stargazers
+        self._forks = forks
+        self._languages = languages
+        self._repos = repos
+        self._name = name
 
     @property
     async def name(self) -> str:
