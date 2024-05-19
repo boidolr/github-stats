@@ -15,13 +15,6 @@ from github_stats import Stats
 ################################################################################
 
 
-def generate_output_folder() -> None:
-    """
-    Create the output folder if it does not already exist
-    """
-    pathlib.Path("generated").mkdir(exist_ok=True)
-
-
 def create_svg(template: str, replacements: dict[str, str], theme: str) -> str:
     colors = (
         {
@@ -57,8 +50,6 @@ async def generate_overview(s: Stats) -> None:
     Generate an SVG badge with summary statistics
     :param s: Represents user's GitHub statistics
     """
-    with open("templates/overview.svg", "r") as f:
-        template = f.read()
 
     replacements = {
         "name": await s.name,
@@ -70,16 +61,14 @@ async def generate_overview(s: Stats) -> None:
         "repos": f"{len(await s.repos):,}",
     }
 
+    template = pathlib.Path("templates/overview.svg").read_text()
     light = create_svg(template, replacements, "light")
     dark = create_svg(template, replacements, "dark")
 
-    generate_output_folder()
-    with open("generated/overview.svg", "w") as f:
-        f.write(light)
-    with open("generated/overview-dark.svg", "w") as f:
-        f.write(dark)
-    with open("generated/overview-light.svg", "w") as f:
-        f.write(light)
+    pathlib.Path("generated").mkdir(exist_ok=True)
+    pathlib.Path("generated/overview.svg").write_text(light)
+    pathlib.Path("generated/overview-dark.svg").write_text(dark)
+    pathlib.Path("generated/overview-light.svg").write_text(light)
 
 
 async def generate_languages(s: Stats) -> None:
@@ -87,9 +76,6 @@ async def generate_languages(s: Stats) -> None:
     Generate an SVG badge with summary languages used
     :param s: Represents user's GitHub statistics
     """
-    with open("templates/languages.svg", "r") as f:
-        template = f.read()
-
     progress = []
     lang_list = []
     sorted_languages = sorted(
@@ -113,23 +99,21 @@ async def generate_languages(s: Stats) -> None:
             <span class="lang">{lang}</span>
             <span class="percent">{prop:0.2f}%</span>
             </li>
-            """
-        )
+            """)
 
     replacements = {
         "progress": "".join(progress),
         "lang_list": "".join(lang_list[:4]),
     }
+
+    template = pathlib.Path("templates/languages.svg").read_text()
     light = create_svg(template, replacements, "light")
     dark = create_svg(template, replacements, "dark")
 
-    generate_output_folder()
-    with open("generated/languages.svg", "w") as f:
-        f.write(light)
-    with open("generated/languages-dark.svg", "w") as f:
-        f.write(dark)
-    with open("generated/languages-light.svg", "w") as f:
-        f.write(light)
+    pathlib.Path("generated").mkdir(exist_ok=True)
+    pathlib.Path("generated/languages.svg").write_text(light)
+    pathlib.Path("generated/languages-dark.svg").write_text(dark)
+    pathlib.Path("generated/languages-light.svg").write_text(light)
 
 
 ################################################################################

@@ -91,7 +91,6 @@ class Queries:
                         params=tuple(params.items()),
                     )
                 if r.status == 202:
-                    # print(f"{path} returned 202. Retrying...")
                     print(f"A path returned 202. Retrying...")
                     await asyncio.sleep(2)
                     continue
@@ -114,7 +113,6 @@ class Queries:
                         continue
                     elif r.status_code == 200:
                         return r.json()
-        # print(f"There were too many 202s. Data for {path} will be incomplete.")
         print("There were too many 202s. Data for this repository will be incomplete.")
         return dict()
 
@@ -329,8 +327,11 @@ Languages:
             )
             raw_results = raw_results if raw_results is not None else {}
 
-            repo_count = raw_results.get("data", {}).get("viewer", {}).get("repositories", {}).get("totalCount", 0) \
-                    + raw_results.get("data", {}).get("viewer", {}).get("repositoriesContributedTo", {}).get("totalCount", 0)
+            repo_count = raw_results.get("data", {}).get("viewer", {}).get(
+                "repositories", {}
+            ).get("totalCount", 0) + raw_results.get("data", {}).get("viewer", {}).get(
+                "repositoriesContributedTo", {}
+            ).get("totalCount", 0)
 
             name = raw_results.get("data", {}).get("viewer", {}).get("name", None)
             if name is None:
