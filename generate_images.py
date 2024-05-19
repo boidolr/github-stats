@@ -53,11 +53,8 @@ async def generate_overview(s: Stats) -> None:
 
     replacements = {
         "name": await s.name,
-        "stars": f"{(await s.stargazers):,}",
-        "forks": f"{(await s.forks):,}",
         "contributions": f"{(await s.total_contributions):,}",
         "lines_changed": f"{sum(await s.lines_changed)}",
-        "views": f"{await s.views:,}",
         "repos": f"{len(await s.repos):,}",
     }
 
