@@ -73,7 +73,7 @@ class Queries:
         :return: deserialized REST JSON output
         """
 
-        for _ in range(60):
+        for _ in range(10):
             headers = {
                 "Authorization": f"token {self.access_token}",
                 "X-GitHub-Api-Version": "2022-11-28",
@@ -92,7 +92,7 @@ class Queries:
                     )
                 if r.status == 202:
                     print(f"A path returned 202. Retrying...")
-                    await asyncio.sleep(2)
+                    await asyncio.sleep(15)
                     continue
 
                 result = await r.json()
@@ -109,7 +109,7 @@ class Queries:
                     )
                     if r.status_code == 202:
                         print(f"A path returned 202. Retrying...")
-                        await asyncio.sleep(2)
+                        await asyncio.sleep(15)
                         continue
                     elif r.status_code == 200:
                         return r.json()
