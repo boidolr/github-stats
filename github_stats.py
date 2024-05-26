@@ -59,6 +59,7 @@ class Queries:
                     "https://api.github.com/graphql",
                     headers=headers,
                     json={"query": generated_query},
+                    timeout=30,
                 )
                 result = r.json()
                 if result is not None:
@@ -106,6 +107,7 @@ class Queries:
                         f"https://api.github.com/{path}",
                         headers=headers,
                         params=tuple(params.items()),
+                        timeout=30,
                     )
                     if r.status_code == 202:
                         print(f"A path returned 202. Retrying...")
@@ -586,7 +588,8 @@ async def main() -> None:
     excluded_langs = os.getenv("EXCLUDED_LANGS")
     exclude_langs = set(excluded_langs.split(",")) if excluded_langs else None
 
-    async with aiohttp.ClientSession() as session:
+    timeout = aiohttp.ClientTimeout(total=30)
+    async with aiohttp.ClientSession(timeout=timeout) as session:
         s = Stats(user, access_token, session, exclude_langs=exclude_langs)
         print(await s.to_str())
 
