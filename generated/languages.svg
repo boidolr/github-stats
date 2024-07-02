@@ -1,0 +1,159 @@
+<svg width="360" height="140" xmlns="http://www.w3.org/2000/svg">
+<style>
+svg {
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+  font-size: 14px;
+  line-height: 21px;
+  --bg: rgba(0, 0, 0, 0);
+  --bg-stroke: rgb(225, 228, 232);
+  --heading: #0969da;
+  --lang: #6e7781;
+  --percent: #24292f;
+  --progress: rgb(225, 228, 232);
+}
+
+#background {
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+  fill: var(--bg);
+  stroke: var(--bg-stroke);
+  stroke-width: 1px;
+  rx: 6px;
+  ry: 6px;
+}
+
+foreignObject {
+  width: calc(100% - 10px - 32px);
+  height: calc(100% - 10px - 24px);
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 0.75em;
+  line-height: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--heading);
+  fill: var(--heading);
+}
+
+ul {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  flex: 1;
+  list-style: none;
+  padding-left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+li {
+  display: inline-flex;
+  font-size: 12px;
+  margin-right: 2ch;
+  align-items: center;
+  flex-wrap: nowrap;
+  transform: translateX(-500%);
+  animation-duration: 1s;
+  animation-name: slideIn;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+@keyframes slideIn {
+  to {
+    transform: translateX(0);
+  }
+}
+
+div.ellipsis {
+  display: flex;
+  flex-flow: column;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.octicon {
+  fill: rgb(88, 96, 105);
+  margin-right: 0.5ch;
+  vertical-align: top;
+}
+
+.progress {
+  display: flex;
+  height: 8px;
+  overflow: hidden;
+  background-color: var(--progress);
+  border-radius: 6px;
+  outline: 1px solid transparent;
+  margin-bottom: 1em;
+}
+
+.progress-item {
+  outline: 2px solid var(--progress);
+  border-collapse: collapse;
+}
+
+.lang {
+  font-weight: 600;
+  margin-right: 4px;
+  color: var(--lang);
+}
+
+.percent {
+  color: var(--percent);
+}
+</style>
+<g>
+<rect x="5" y="5" id="background" />
+<g>
+<foreignObject x="21" y="17" width="318" height="176">
+<div xmlns="http://www.w3.org/1999/xhtml" class="ellipsis">
+
+<h2>Languages (by file size)</h2>
+
+<div>
+<span class="progress">
+<span style="background-color: #3572A5;width: 53.462%;" class="progress-item"></span><span style="background-color: #3178c6;width: 26.200%;" class="progress-item"></span><span style="background-color: #A97BFF;width: 8.805%;" class="progress-item"></span><span style="background-color: #DA5B0B;width: 4.337%;" class="progress-item"></span><span style="background-color: #563d7c;width: 2.207%;" class="progress-item"></span><span style="background-color: #e34c26;width: 1.854%;" class="progress-item"></span><span style="background-color: #f34b7d;width: 0.897%;" class="progress-item"></span><span style="background-color: #41b883;width: 0.794%;" class="progress-item"></span><span style="background-color: #c6538c;width: 0.455%;" class="progress-item"></span><span style="background-color: #ff5a03;width: 0.372%;" class="progress-item"></span>
+</span>
+</div>
+
+<ul>
+
+            <li style="animation-delay: 0ms;">
+            <svg xmlns="http://www.w3.org/2000/svg" class="octicon" style="fill:#3572A5;"
+            viewBox="0 0 16 16" version="1.1" width="16" height="16"><path
+            fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"></path></svg>
+            <span class="lang">Python</span>
+            <span class="percent">53.46%</span>
+            </li>
+                        <li style="animation-delay: 50ms;">
+            <svg xmlns="http://www.w3.org/2000/svg" class="octicon" style="fill:#3178c6;"
+            viewBox="0 0 16 16" version="1.1" width="16" height="16"><path
+            fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"></path></svg>
+            <span class="lang">TypeScript</span>
+            <span class="percent">26.20%</span>
+            </li>
+                        <li style="animation-delay: 100ms;">
+            <svg xmlns="http://www.w3.org/2000/svg" class="octicon" style="fill:#A97BFF;"
+            viewBox="0 0 16 16" version="1.1" width="16" height="16"><path
+            fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"></path></svg>
+            <span class="lang">Kotlin</span>
+            <span class="percent">8.81%</span>
+            </li>
+                        <li style="animation-delay: 150ms;">
+            <svg xmlns="http://www.w3.org/2000/svg" class="octicon" style="fill:#DA5B0B;"
+            viewBox="0 0 16 16" version="1.1" width="16" height="16"><path
+            fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"></path></svg>
+            <span class="lang">Jupyter Notebook</span>
+            <span class="percent">4.34%</span>
+            </li>
+            
+
+</ul>
+
+</div>
+</foreignObject>
+</g>
+</g>
+</svg>
